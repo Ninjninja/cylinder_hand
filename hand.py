@@ -67,7 +67,7 @@ def main():
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_LIGHTING)
     lightZeroPosition = [10.,4.,10.,1.]
-    lightZeroColor = [0.8,1.0,0.8,1.0] #green tinged
+    lightZeroColor = [1.0,1.0,1.0,0.0] #green tinged
     glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
     glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
@@ -81,9 +81,10 @@ def main():
     glutKeyboardFunc(keyboard)
     glMatrixMode(GL_PROJECTION)
     # gluPerspective(50.,1.,1.,40.)
-    gluPerspective(zoom, float(g_Width) / float(g_Height), g_nearPlane, g_farPlane)
+    # gluPerspective(zoom, float(g_Width) / float(g_Height), g_nearPlane, g_farPlane)
+    gluPerspective(45.0, float(g_Width) / float(g_Height), 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
-    gluLookAt(0, 0, -g_fViewDistance, 0, 0, 0, -.1, 0, 0)   #-.1,0,0
+    gluLookAt(0, 0, -g_fViewDistance, 0, 0, 2, -2, 0, 0)   #-.1,0,0
     # gluLookAt(0,0,400,
     #           79.2725, 130.086, 67.8229,
     #           0,1,0)
@@ -93,14 +94,45 @@ def main():
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+    gluLookAt(0, -3, -3, 0, 0, 0, -2, 0, 0)   #-.1,0,0
+    # glLoadIdentity()
+    # glTranslatef(-1.5, 0.0, -2.0)
     glPushMatrix()
-    color = [1.0,0.,0.,1.]
-    glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
-    glutSolidSphere(2,20,20)
+    # color = [1.0,0.,0.,0.5]
+    # glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
+    glBegin(GL_TRIANGLES)
+
+    glColor3f(1.0, 0.0, 0.0)
+    glVertex3f(0.0, 1.0, 0.0)
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f(-1.0, -1.0, 1.0)
+    glColor3f(0.0, 0.0, 1.0)
+    glVertex3f(1.0, -1.0, 1.0)
+    glColor3f(1.0, 0.0, 0.0)
+    glVertex3f(0.0, 1.0, 0.0)
+    glColor3f(0.0, 0.0, 1.0)
+    glVertex3f(1.0, -1.0, 1.0)
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f(1.0, -1.0, -1.0)
+    glColor3f(1.0, 0.0, 0.0)
+    glVertex3f(0.0, 1.0, 0.0)
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f(1.0, -1.0, -1.0)
+    glColor3f(0.0, 0.0, 1.0)
+    glVertex3f(-1.0, -1.0, -1.0)
+
+    glColor3f(1.0, 0.0, 0.0)
+    glVertex3f(0.0, 1.0, 0.0)
+    glColor3f(0.0, 0.0, 1.0)
+    glVertex3f(-1.0, -1.0, -1.0)
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f(-1.0, -1.0, 1.0)
+    glEnd()
+    # glutWireSphere(2,20,20)
     # glutSolidCylinder(5, 5, 500, 5)
-    point1 = [79.2725, 130.086, 67.8229]
-    point2 = [44.8442, 143.235, 36.0742]
-    cylinder_2p(np.array(point1), np.array(point2),3,[255,0,0,255])
+    # point1 = [79.2725, 130.086, 67.8229]
+    # point2 = [44.8442, 143.235, 36.0742]
+    # cylinder_2p(np.array(point1), np.array(point2),3,[255,0,0,255])
     glPopMatrix()
     glutSwapBuffers()
     return

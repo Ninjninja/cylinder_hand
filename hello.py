@@ -19,7 +19,7 @@ g_farPlane = 1000.
 
 action = ""
 xStart = yStart = 0.
-zoom = 90.
+zoom = 1000.
 
 xRotate = 685.0
 yRotate = -75.0
@@ -27,7 +27,27 @@ zRotate = 0.
 
 xTrans = 0.
 yTrans = 0.
-
+color_palette = [[0.1, 0.0, 0.0],
+                 [0.0, 0.1, 0.0],
+                 [0.0, 0.0, 0.1],
+                 [0.2, 0.5, 0.0],
+                 [0.5, 0.2, 0.0],
+                 [0.0, 0.5, 0.2],
+                 [0.3, 0.0, 0.5],
+                 [0.0, 0.3, 0.0],
+                 [0.5, 0.0, 0.3],
+                 [0.4, 0.0, 0.0],
+                 [0.0, 0.4, 0.0],
+                 [0.0, 0.0, 0.4],
+                 [0.5, 0.0, 0.0],
+                 [0.0, 0.5, 0.0],
+                 [0.0, 0.0, 0.5],
+                 [0.6, 0.0, 0.0],
+                 [0.0, 0.6, 0.0],
+                 [0.0, 0.0, 0.6],
+                 [0.7, 0.0, 0.0],
+                 [0.0, 0.7, 0.0],
+                 [0.0, 0.0, 0.7]]
 
 # -------------------
 # SCENE CONSTRUCTOR
@@ -46,12 +66,16 @@ def scenemodel():
     # cylinder_2p(np.array(points[1]), np.array(points[2]),50,[255,0,0,255])
     # cylinder_2p(np.array(points[2]), np.array(points[3]),50,[255,0,0,255])
     # cylinder_2p(np.array(arm_end), np.array(arm_start),200,[255,0,0,0.5])
+    color_count = 0
     joints = next(tframe)
     if joints != None:
         for points in joints[:-2]:
             points = [list(data) for data in points]
-            for i in range(len(points)-1):
+            for i in range(1,len(points)-1):
+                color = color_palette[color_count]
+                setMaterial(color[0], color[1], color[2], 0.0, 0.5, 1.0, 0.5, 0.5, 0.5, 0.0)
                 cylinder_2p(np.array(points[i]), np.array(points[i+1]), 50, [200, 0, 0, 0.5])
+                color_count += 1
     cylinder_2p(np.array(joints[-1]), np.array(joints[-2]), 200, [200, 0, 0, 0.5])
 
     # glutSolidTeapot(1.)
@@ -92,13 +116,24 @@ def printHelp():
          -------------------------------------------------------------------\n
          \n""")
 
+def setMaterial( ambientR,  ambientG,  ambientB, diffuseR,  diffuseG,  diffuseB, specularR,  specularG,  specularB, shininess ):
+
+    ambient= [ambientR, ambientG, ambientB]
+    diffuse= [diffuseR, diffuseG, diffuseB]
+    specular = [specularR, specularG, specularB]
+
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,ambient)
+    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,diffuse)
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,specular)
+    glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,shininess)
 
 def init():
     glEnable(GL_NORMALIZE)
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.2, 0.2, 0.0])
     glLightfv(GL_LIGHT0, GL_POSITION, [.0, 200.0, 200., 0.])
-    glLightfv(GL_LIGHT0, GL_AMBIENT, [.0, .0, .0, 1.0])
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
-    glLightfv(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0]);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.5, 0.5, 0.5, 1.0])
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.5, 0.5, 0.5, 1.0])
+    # glLightfv(GL_LIGHT0, GL_SPECULAR, [0.5, 0.5, 0.5, 1.0])
     glEnable(GL_LIGHT0)
     glEnable(GL_LIGHTING)
     glEnable(GL_DEPTH_TEST)
@@ -109,7 +144,7 @@ def init():
 
 def resetView():
     global zoom, xRotate, yRotate, zRotate, xTrans, yTrans
-    zoom = 90.
+    zoom = 100.
     xRotate = 685.0
     yRotate = -75.0
     zRotate = 0.
@@ -124,7 +159,7 @@ def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     # Set up viewing transformation, looking down -Z axis
     glLoadIdentity()
-    g_fViewDistance = 9
+    g_fViewDistance = 90
     # zoom = 70.0
     g_Width = 600
     g_Height = 600
@@ -138,14 +173,17 @@ def display():
     gluPerspective(zoom, float(g_Width) / float(g_Height), g_nearPlane, g_farPlane)
     glMatrixMode(GL_MODELVIEW)
     # Render the scene
+    glColor3f(0.8, 0.2, 0.1)
+
     polarView()
     scenemodel()
+
     # Make sure changes appear onscreen
     glutSwapBuffers()
     glReadBuffer(GL_FRONT)
     data = glReadPixels(0, 0, 600, 600, GL_RGBA, GL_UNSIGNED_BYTE)
     image = Image.frombytes("RGBA", (600, 600), data, 'raw')
-    image.save('save_vid/file_'+str(count).zfill(4), 'png')
+    # image.save('save_vid/file_'+str(count).zfill(4), 'png')
     count += 1
 
 
